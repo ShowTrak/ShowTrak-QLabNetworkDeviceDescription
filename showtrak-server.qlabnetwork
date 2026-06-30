@@ -1,0 +1,212 @@
+{
+  "identifier": "com.showtrak.server",
+  "displayName": "ShowTrak Server",
+  "grouping": "General",
+  "api": 1,
+  "messageType": "OSC",
+  "network": [
+    {
+      "transport": "UDP",
+      "defaultPort": 3333,
+      "canEditPort": true
+    }
+  ],
+  "parameters": [
+    {
+      "key": "message",
+      "displayName": "Action",
+      "type": "menu",
+      "fadeable": false,
+      "values": [
+        { "Gracefully Shutdown": "/Shutdown" },
+        { "Forcefully Shutdown": "/Shutdown/Force" },
+        "---",
+        { "Select Client": "clientSelect" },
+        { "Deselect Client": "clientDeselect" },
+        { "Wake on LAN Client": "clientWol" },
+        { "Run Script on Client": "clientRunScript" },
+        "---",
+        { "Send Dummy Heartbeat": "dummyHeartbeat" },
+        "---",
+        { "Select Group": "groupSelect" },
+        { "Deselect Group": "groupDeselect" },
+        { "Send wake-on-lan packet to Group": "groupWol" },
+        { "Run Script on Group": "groupRunScript" },
+        "---",
+        { "Select All Clients": "/All/Select" },
+        { "Deselect All Clients": "/All/Deselect" },
+        { "Send wake-on-lan packet to All Clients": "/All/WakeOnLAN" },
+        { "Run Script on All Clients": "allRunScript" },
+        "---",
+        { "Selection: Wake on LAN": "/Selection/WakeOnLAN" },
+        { "Selection: Run Script": "selectionRunScript" }
+      ],
+      "defaultValue": "/All/Select"
+    },
+    {
+      "key": "prefix",
+      "type": "string",
+      "hidden": true,
+      "pattern": ".*",
+      "defaultValue": "/API"
+    }
+  ],
+  "conditions": [
+    {
+      "predicate": "message in { '/Shutdown', '/Shutdown/Force', '/All/Select', '/All/Deselect', '/All/WakeOnLAN', '/Selection/WakeOnLAN' }",
+      "template": "{prefix}{message}"
+    },
+    {
+      "predicate": "message == 'clientSelect'",
+      "template": "{prefix}/Client/{uuid}/Select",
+      "parameters": [
+        {
+          "key": "uuid",
+          "displayName": "Client UUID",
+          "type": "string",
+          "pattern": "^\\S+$"
+        }
+      ]
+    },
+    {
+      "predicate": "message == 'clientDeselect'",
+      "template": "{prefix}/Client/{uuid}/Deselect",
+      "parameters": [
+        {
+          "key": "uuid",
+          "displayName": "Client UUID",
+          "type": "string",
+          "pattern": "^\\S+$"
+        }
+      ]
+    },
+    {
+      "predicate": "message == 'clientWol'",
+      "template": "{prefix}/Client/{uuid}/WakeOnLAN",
+      "parameters": [
+        {
+          "key": "uuid",
+          "displayName": "Client UUID",
+          "type": "string",
+          "pattern": "^\\S+$"
+        }
+      ]
+    },
+    {
+      "predicate": "message == 'clientRunScript'",
+      "template": "{prefix}/Client/{uuid}/RunScript/{scriptId}",
+      "parameters": [
+        {
+          "key": "uuid",
+          "displayName": "Client UUID",
+          "type": "string",
+          "pattern": "^\\S+$"
+        },
+        {
+          "key": "scriptId",
+          "displayName": "Script ID",
+          "type": "string",
+          "pattern": "^\\S+$"
+        }
+      ]
+    },
+    {
+      "predicate": "message == 'dummyHeartbeat'",
+      "template": "{prefix}/Dummy/{dummyId}/Heartbeat",
+      "parameters": [
+        {
+          "key": "dummyId",
+          "displayName": "Dummy ID",
+          "type": "string",
+          "pattern": "^\\S+$"
+        }
+      ]
+    },
+    {
+      "predicate": "message == 'groupSelect'",
+      "template": "{prefix}/Group/{groupId}/Select",
+      "parameters": [
+        {
+          "key": "groupId",
+          "displayName": "Group ID",
+          "type": "scalar",
+          "precision": 0,
+          "defaultValue": 1,
+          "fadeable": false
+        }
+      ]
+    },
+    {
+      "predicate": "message == 'groupDeselect'",
+      "template": "{prefix}/Group/{groupId}/Deselect",
+      "parameters": [
+        {
+          "key": "groupId",
+          "displayName": "Group ID",
+          "type": "scalar",
+          "precision": 0,
+          "defaultValue": 1,
+          "fadeable": false
+        }
+      ]
+    },
+    {
+      "predicate": "message == 'groupWol'",
+      "template": "{prefix}/Group/{groupId}/WakeOnLAN",
+      "parameters": [
+        {
+          "key": "groupId",
+          "displayName": "Group ID",
+          "type": "scalar",
+          "precision": 0,
+          "defaultValue": 1,
+          "fadeable": false
+        }
+      ]
+    },
+    {
+      "predicate": "message == 'groupRunScript'",
+      "template": "{prefix}/Group/{groupId}/RunScript/{scriptId}",
+      "parameters": [
+        {
+          "key": "groupId",
+          "displayName": "Group ID",
+          "type": "scalar",
+          "precision": 0,
+          "defaultValue": 1,
+          "fadeable": false
+        },
+        {
+          "key": "scriptId",
+          "displayName": "Script ID",
+          "type": "string",
+          "pattern": "^\\S+$"
+        }
+      ]
+    },
+    {
+      "predicate": "message == 'allRunScript'",
+      "template": "{prefix}/All/RunScript/{scriptId}",
+      "parameters": [
+        {
+          "key": "scriptId",
+          "displayName": "Script ID",
+          "type": "string",
+          "pattern": "^\\S+$"
+        }
+      ]
+    },
+    {
+      "predicate": "message == 'selectionRunScript'",
+      "template": "{prefix}/Selection/RunScript/{scriptId}",
+      "parameters": [
+        {
+          "key": "scriptId",
+          "displayName": "Script ID",
+          "type": "string",
+          "pattern": "^\\S+$"
+        }
+      ]
+    }
+  ]
+}

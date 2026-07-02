@@ -16,18 +16,12 @@ Both files currently contain the same device description content.
 
 ## Install into QLab
 
-QLab loads built-in network device descriptions from:
+QLab can load custom network device descriptions from your user Library folder.
 
-`/Applications/QLab.app/Contents/Resources/NetworkDeviceDescriptions`
-
-### Option A: Finder
-
-1. Quit QLab.
-2. In Finder, open `Applications`.
-3. Right-click `QLab.app` and choose `Show Package Contents`.
-4. Navigate to `Contents/Resources/NetworkDeviceDescriptions`.
-5. Copy `showtrak-server.qlabnetwork` from this repository into that folder.
-6. Re-open QLab.
+1. In Finder, hold down `Option` and select `Go` > `Library`.
+2. Open `Application Support` > `QLab` > `Network Library`.
+3. Drag `showtrak-server.qlabnetwork` into the `Network Library` folder.
+4. Launch or restart QLab.
 
 ## Use in QLab
 
@@ -43,15 +37,10 @@ QLab loads built-in network device descriptions from:
 ## Troubleshooting
 
 - Device does not appear in QLab:
-  - Verify file is in `.../NetworkDeviceDescriptions`.
+  - Verify `showtrak-server.qlabnetwork` is in `~/Library/Application Support/QLab/Network Library`.
   - Make sure QLab was fully restarted after install.
   - Confirm filename is unchanged.
 - Commands do not trigger behavior in ShowTrak:
   - Check destination IP and UDP port.
   - Confirm ShowTrak Server is running and listening on OSC via the OSC/API Debug Terminal
-  - Validate UUID, Group ID, Script ID, or Dummy ID values.
-
-## Notes
-
-- QLab updates will replace app bundle resources. Re-copy `showtrak-server.qlabnetwork` after updating QLab.
-- Keep this repository file as your source of truth for future edits.
+  - Validate Client ID, Group ID, Script ID, or Dummy ID values.

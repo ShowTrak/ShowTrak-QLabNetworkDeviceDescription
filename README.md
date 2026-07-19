@@ -1,6 +1,6 @@
 # ShowTrak QLab Network Device Description
 
-This package adds a custom QLab OSC network device definition for ShowTrak Server.
+This package adds a custom QLab OSC network device definition for ShowTrak Server v3.13+
 
 ## Links
 
@@ -43,4 +43,6 @@ QLab can load custom network device descriptions from your user Library folder.
 - Commands do not trigger behavior in ShowTrak:
   - Check destination IP and UDP port.
   - Confirm ShowTrak Server is running and listening on OSC via the OSC/API Debug Terminal
-  - Validate Client ID, Group ID, Script ID, or Dummy ID values.
+  - Validate Client Slug, Group Slug, Tag Slug, Dummy Slug, Script ID, or Event ID values.
+  - `Trigger Event` only reaches integrated clients (QLab, etc.); it fails if the target resolves to no integrated clients.
+  - Slugs are shown against each entity in ShowTrak Server; clients, monitors and dummies share one slug namespace, groups and tags have their own.

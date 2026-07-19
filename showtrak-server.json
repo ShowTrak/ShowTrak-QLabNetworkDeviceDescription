@@ -18,30 +18,28 @@
       "type": "menu",
       "fadeable": false,
       "values": [
-        { "Gracefully Shutdown": "/Shutdown" },
-        { "Forcefully Shutdown": "/Shutdown/Force" },
+        { "Client: Wake on LAN": "clientWol" },
+        { "Client: Run Script": "clientRunScript" },
+        { "Client: Trigger Event": "clientTriggerEvent" },
         "---",
-        { "Select Client": "clientSelect" },
-        { "Deselect Client": "clientDeselect" },
-        { "Wake on LAN Client": "clientWol" },
-        { "Run Script on Client": "clientRunScript" },
+        { "Group: Wake on LAN": "groupWol" },
+        { "Group: Run Script": "groupRunScript" },
+        { "Group: Trigger Event": "groupTriggerEvent" },
         "---",
-        { "Send Dummy Heartbeat": "dummyHeartbeat" },
+        { "Tag: Wake on LAN": "tagWol" },
+        { "Tag: Run Script": "tagRunScript" },
+        { "Tag: Trigger Event": "tagTriggerEvent" },
         "---",
-        { "Select Group": "groupSelect" },
-        { "Deselect Group": "groupDeselect" },
-        { "Send wake-on-lan packet to Group": "groupWol" },
-        { "Run Script on Group": "groupRunScript" },
+        { "All Clients: Wake on LAN": "/All/WakeOnLAN" },
+        { "All Clients: Run Script": "allRunScript" },
+        { "All Clients: Trigger Event": "allTriggerEvent" },
         "---",
-        { "Select All Clients": "/All/Select" },
-        { "Deselect All Clients": "/All/Deselect" },
-        { "Send wake-on-lan packet to All Clients": "/All/WakeOnLAN" },
-        { "Run Script on All Clients": "allRunScript" },
+        { "Dummy: Send Heartbeat": "dummyHeartbeat" },
         "---",
-        { "Selection: Wake on LAN": "/Selection/WakeOnLAN" },
-        { "Selection: Run Script": "selectionRunScript" }
+        { "Server: Shutdown Gracefully": "/Shutdown" },
+        { "Server: Shutdown Forcefully": "/Shutdown/Force" }
       ],
-      "defaultValue": "/All/Select"
+      "defaultValue": "/All/WakeOnLAN"
     },
     {
       "key": "prefix",
@@ -53,40 +51,16 @@
   ],
   "conditions": [
     {
-      "predicate": "message in { '/Shutdown', '/Shutdown/Force', '/All/Select', '/All/Deselect', '/All/WakeOnLAN', '/Selection/WakeOnLAN' }",
+      "predicate": "message in { '/Shutdown', '/Shutdown/Force', '/All/WakeOnLAN' }",
       "template": "{prefix}{message}"
     },
     {
-      "predicate": "message == 'clientSelect'",
-      "template": "{prefix}/Client/{uuid}/Select",
-      "parameters": [
-        {
-          "key": "uuid",
-          "displayName": "Client UUID",
-          "type": "string",
-          "pattern": "^\\S+$"
-        }
-      ]
-    },
-    {
-      "predicate": "message == 'clientDeselect'",
-      "template": "{prefix}/Client/{uuid}/Deselect",
-      "parameters": [
-        {
-          "key": "uuid",
-          "displayName": "Client UUID",
-          "type": "string",
-          "pattern": "^\\S+$"
-        }
-      ]
-    },
-    {
       "predicate": "message == 'clientWol'",
-      "template": "{prefix}/Client/{uuid}/WakeOnLAN",
+      "template": "{prefix}/Client/{slug}/WakeOnLAN",
       "parameters": [
         {
-          "key": "uuid",
-          "displayName": "Client UUID",
+          "key": "slug",
+          "displayName": "Client Slug",
           "type": "string",
           "pattern": "^\\S+$"
         }
@@ -94,11 +68,11 @@
     },
     {
       "predicate": "message == 'clientRunScript'",
-      "template": "{prefix}/Client/{uuid}/RunScript/{scriptId}",
+      "template": "{prefix}/Client/{slug}/RunScript/{scriptId}",
       "parameters": [
         {
-          "key": "uuid",
-          "displayName": "Client UUID",
+          "key": "slug",
+          "displayName": "Client Slug",
           "type": "string",
           "pattern": "^\\S+$"
         },
@@ -111,74 +85,114 @@
       ]
     },
     {
-      "predicate": "message == 'dummyHeartbeat'",
-      "template": "{prefix}/Dummy/{dummyId}/Heartbeat",
+      "predicate": "message == 'clientTriggerEvent'",
+      "template": "{prefix}/Client/{slug}/TriggerEvent/{eventId}",
       "parameters": [
         {
-          "key": "dummyId",
-          "displayName": "Dummy ID",
+          "key": "slug",
+          "displayName": "Client Slug",
           "type": "string",
           "pattern": "^\\S+$"
-        }
-      ]
-    },
-    {
-      "predicate": "message == 'groupSelect'",
-      "template": "{prefix}/Group/{groupId}/Select",
-      "parameters": [
+        },
         {
-          "key": "groupId",
-          "displayName": "Group ID",
-          "type": "scalar",
-          "precision": 0,
-          "defaultValue": 1,
-          "fadeable": false
-        }
-      ]
-    },
-    {
-      "predicate": "message == 'groupDeselect'",
-      "template": "{prefix}/Group/{groupId}/Deselect",
-      "parameters": [
-        {
-          "key": "groupId",
-          "displayName": "Group ID",
-          "type": "scalar",
-          "precision": 0,
-          "defaultValue": 1,
-          "fadeable": false
+          "key": "eventId",
+          "displayName": "Event ID",
+          "type": "string",
+          "pattern": "^\\S+$"
         }
       ]
     },
     {
       "predicate": "message == 'groupWol'",
-      "template": "{prefix}/Group/{groupId}/WakeOnLAN",
+      "template": "{prefix}/Group/{slug}/WakeOnLAN",
       "parameters": [
         {
-          "key": "groupId",
-          "displayName": "Group ID",
-          "type": "scalar",
-          "precision": 0,
-          "defaultValue": 1,
-          "fadeable": false
+          "key": "slug",
+          "displayName": "Group Slug",
+          "type": "string",
+          "pattern": "^\\S+$"
         }
       ]
     },
     {
       "predicate": "message == 'groupRunScript'",
-      "template": "{prefix}/Group/{groupId}/RunScript/{scriptId}",
+      "template": "{prefix}/Group/{slug}/RunScript/{scriptId}",
       "parameters": [
         {
-          "key": "groupId",
-          "displayName": "Group ID",
-          "type": "scalar",
-          "precision": 0,
-          "defaultValue": 1,
-          "fadeable": false
+          "key": "slug",
+          "displayName": "Group Slug",
+          "type": "string",
+          "pattern": "^\\S+$"
         },
         {
           "key": "scriptId",
           "displayName": "Script ID",
+          "type": "string",
+          "pattern": "^\\S+$"
+        }
+      ]
+    },
+    {
+      "predicate": "message == 'groupTriggerEvent'",
+      "template": "{prefix}/Group/{slug}/TriggerEvent/{eventId}",
+      "parameters": [
+        {
+          "key": "slug",
+          "displayName": "Group Slug",
+          "type": "string",
+          "pattern": "^\\S+$"
+        },
+        {
+          "key": "eventId",
+          "displayName": "Event ID",
+          "type": "string",
+          "pattern": "^\\S+$"
+        }
+      ]
+    },
+    {
+      "predicate": "message == 'tagWol'",
+      "template": "{prefix}/Tag/{slug}/WakeOnLAN",
+      "parameters": [
+        {
+          "key": "slug",
+          "displayName": "Tag Slug",
+          "type": "string",
+          "pattern": "^\\S+$"
+        }
+      ]
+    },
+    {
+      "predicate": "message == 'tagRunScript'",
+      "template": "{prefix}/Tag/{slug}/RunScript/{scriptId}",
+      "parameters": [
+        {
+          "key": "slug",
+          "displayName": "Tag Slug",
+          "type": "string",
+          "pattern": "^\\S+$"
+        },
+        {
+          "key": "scriptId",
+          "displayName": "Script ID",
+          "type": "string",
+          "pattern": "^\\S+$"
+        }
+      ]
+    },
+    {
+      "predicate": "message == 'tagTriggerEvent'",
+      "template": "{prefix}/Tag/{slug}/TriggerEvent/{eventId}",
+      "parameters": [
+        {
+          "key": "slug",
+          "displayName": "Tag Slug",
+          "type": "string",
+          "pattern": "^\\S+$"
+        },
+        {
+          "key": "eventId",
+          "displayName": "Event ID",
           "type": "string",
           "pattern": "^\\S+$"
         }
@@ -197,12 +211,24 @@
       ]
     },
     {
-      "predicate": "message == 'selectionRunScript'",
-      "template": "{prefix}/Selection/RunScript/{scriptId}",
+      "predicate": "message == 'allTriggerEvent'",
+      "template": "{prefix}/All/TriggerEvent/{eventId}",
       "parameters": [
         {
-          "key": "scriptId",
-          "displayName": "Script ID",
+          "key": "eventId",
+          "displayName": "Event ID",
+          "type": "string",
+          "pattern": "^\\S+$"
+        }
+      ]
+    },
+    {
+      "predicate": "message == 'dummyHeartbeat'",
+      "template": "{prefix}/Dummy/{slug}/Heartbeat",
+      "parameters": [
+        {
+          "key": "slug",
+          "displayName": "Dummy Slug",
           "type": "string",
           "pattern": "^\\S+$"
         }

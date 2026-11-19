@@ -13,224 +13,576 @@
   ],
   "parameters": [
     {
-      "key": "message",
-      "displayName": "Action",
+      "key": "target",
+      "displayName": "Target",
       "type": "menu",
       "fadeable": false,
       "values": [
-        { "Client: Wake on LAN": "clientWol" },
-        { "Client: Run Script": "clientRunScript" },
-        { "Client: Trigger Event": "clientTriggerEvent" },
+        { "Single client": "Client/" },
+        { "Tagged clients": "Tag/" },
+        { "All clients": "All" },
+        { "Group": "Group/" },
         "---",
-        { "Group: Wake on LAN": "groupWol" },
-        { "Group: Run Script": "groupRunScript" },
-        { "Group: Trigger Event": "groupTriggerEvent" },
+        { "Monitor - run check action": "Monitor/" },
+        { "FreeKiosk terminal": "FreeKiosk/" },
         "---",
-        { "Tag: Wake on LAN": "tagWol" },
-        { "Tag: Run Script": "tagRunScript" },
-        { "Tag: Trigger Event": "tagTriggerEvent" },
+        { "Dummy - send heartbeat": "Dummy" },
         "---",
-        { "All Clients: Wake on LAN": "/All/WakeOnLAN" },
-        { "All Clients: Run Script": "allRunScript" },
-        { "All Clients: Trigger Event": "allTriggerEvent" },
-        "---",
-        { "Dummy: Send Heartbeat": "dummyHeartbeat" },
-        "---",
-        { "Server: Shutdown Gracefully": "/Shutdown" },
-        { "Server: Shutdown Forcefully": "/Shutdown/Force" }
+        { "System": "System" }
       ],
-      "defaultValue": "/All/WakeOnLAN"
-    },
-    {
-      "key": "prefix",
-      "type": "string",
-      "hidden": true,
-      "pattern": ".*",
-      "defaultValue": "/API"
+      "defaultValue": "Client/"
     }
   ],
   "conditions": [
     {
-      "predicate": "message in { '/Shutdown', '/Shutdown/Force', '/All/WakeOnLAN' }",
-      "template": "{prefix}{message}"
-    },
-    {
-      "predicate": "message == 'clientWol'",
-      "template": "{prefix}/Client/{slug}/WakeOnLAN",
+      "predicate": "target == 'Client/'",
+      "template": "/API/{target}{id}{action}",
       "parameters": [
         {
-          "key": "slug",
-          "displayName": "Client Slug",
-          "type": "string",
-          "pattern": "^\\S+$"
-        }
-      ]
-    },
-    {
-      "predicate": "message == 'clientRunScript'",
-      "template": "{prefix}/Client/{slug}/RunScript/{scriptId}",
-      "parameters": [
-        {
-          "key": "slug",
-          "displayName": "Client Slug",
+          "key": "id",
+          "displayName": "Client slug",
           "type": "string",
           "pattern": "^\\S+$"
         },
         {
-          "key": "scriptId",
-          "displayName": "Script ID",
-          "type": "string",
-          "pattern": "^\\S+$"
+          "key": "action",
+          "displayName": "Action",
+          "type": "menu",
+          "fadeable": false,
+          "values": [
+            { "Wake on LAN": "/WakeOnLAN" },
+            { "Run script": "/RunScript" },
+            { "Trigger event": "/TriggerEvent" }
+          ],
+          "defaultValue": "/WakeOnLAN"
+        }
+      ],
+      "conditions": [
+        {
+          "predicate": "action == '/RunScript'",
+          "template": "/API/{target}{id}{action}/{script}",
+          "parameters": [
+            {
+              "key": "script",
+              "displayName": "Script ID",
+              "type": "string",
+              "pattern": "^\\S+$"
+            }
+          ]
+        },
+        {
+          "predicate": "action == '/TriggerEvent'",
+          "template": "/API/{target}{id}{action}/{script}",
+          "parameters": [
+            {
+              "key": "script",
+              "displayName": "Event ID",
+              "type": "string",
+              "pattern": "^\\S+$"
+            }
+          ]
         }
       ]
     },
     {
-      "predicate": "message == 'clientTriggerEvent'",
-      "template": "{prefix}/Client/{slug}/TriggerEvent/{eventId}",
+      "predicate": "target == 'Tag/'",
+      "template": "/API/{target}{id}{action}",
       "parameters": [
         {
-          "key": "slug",
-          "displayName": "Client Slug",
+          "key": "id",
+          "displayName": "Tag",
           "type": "string",
           "pattern": "^\\S+$"
         },
         {
-          "key": "eventId",
-          "displayName": "Event ID",
-          "type": "string",
-          "pattern": "^\\S+$"
+          "key": "action",
+          "displayName": "Action",
+          "type": "menu",
+          "fadeable": false,
+          "values": [
+            { "Wake on LAN": "/WakeOnLAN" },
+            { "Run script": "/RunScript" },
+            { "Trigger event": "/TriggerEvent" },
+            { "FreeKiosk command": "/FreeKiosk" }
+          ],
+          "defaultValue": "/WakeOnLAN"
+        }
+      ],
+      "conditions": [
+        {
+          "predicate": "action == '/RunScript'",
+          "template": "/API/{target}{id}{action}/{script}",
+          "parameters": [
+            {
+              "key": "script",
+              "displayName": "Script ID",
+              "type": "string",
+              "pattern": "^\\S+$"
+            }
+          ]
+        },
+        {
+          "predicate": "action == '/TriggerEvent'",
+          "template": "/API/{target}{id}{action}/{script}",
+          "parameters": [
+            {
+              "key": "script",
+              "displayName": "Event ID",
+              "type": "string",
+              "pattern": "^\\S+$"
+            }
+          ]
+        },
+        {
+          "predicate": "action == '/FreeKiosk'",
+          "parameters": [
+            {
+              "key": "command",
+              "displayName": "Command",
+              "type": "menu",
+              "fadeable": false,
+              "values": [
+                { "Wake Screen": "wake" },
+                { "Screen On": "screen.on" },
+                { "Screen Off": "screen.off" },
+                { "Lock Device": "lock" },
+                { "Reboot": "reboot" },
+                { "Brightness": "brightness" },
+                { "Enable Screensaver": "screensaver.on" },
+                { "Disable Screensaver": "screensaver.off" },
+                { "Reload Page": "reload" },
+                { "Volume": "volume" },
+                { "Beep": "audio.beep" },
+                { "Clear Cache": "clearCache" },
+                { "Restart Kiosk UI": "restart-ui" }
+              ],
+              "defaultValue": "wake"
+            }
+          ],
+          "conditions": [
+            {
+              "predicate": "command in { 'wake', 'screen.on', 'screen.off', 'lock', 'reboot', 'screensaver.on', 'screensaver.off', 'reload', 'audio.beep', 'clearCache', 'restart-ui' }",
+              "template": "/API/{target}{id}/FreeKiosk/{command}"
+            },
+            {
+              "predicate": "command == 'brightness'",
+              "template": "/API/{target}{id}/FreeKiosk/{command}/{v1}",
+              "parameters": [
+                {
+                  "key": "v1",
+                  "displayName": "Level",
+                  "type": "scalar",
+                  "width": 150,
+                  "minimum": 0,
+                  "precision": 0,
+                  "fadeable": false,
+                  "defaultValue": 50,
+                  "maximum": 100
+                }
+              ]
+            },
+            {
+              "predicate": "command == 'volume'",
+              "template": "/API/{target}{id}/FreeKiosk/{command}/{v1}",
+              "parameters": [
+                {
+                  "key": "v1",
+                  "displayName": "Level",
+                  "type": "scalar",
+                  "width": 150,
+                  "minimum": 0,
+                  "precision": 0,
+                  "fadeable": false,
+                  "defaultValue": 50,
+                  "maximum": 100
+                }
+              ]
+            }
+          ]
         }
       ]
     },
     {
-      "predicate": "message == 'groupWol'",
-      "template": "{prefix}/Group/{slug}/WakeOnLAN",
+      "predicate": "target == 'All'",
+      "template": "/API/{target}{action}",
       "parameters": [
         {
-          "key": "slug",
-          "displayName": "Group Slug",
-          "type": "string",
-          "pattern": "^\\S+$"
+          "key": "action",
+          "displayName": "Action",
+          "type": "menu",
+          "fadeable": false,
+          "values": [
+            { "Wake on LAN": "/WakeOnLAN" },
+            { "Run script": "/RunScript" },
+            { "Trigger event": "/TriggerEvent" },
+            { "FreeKiosk command": "/FreeKiosk" }
+          ],
+          "defaultValue": "/WakeOnLAN"
+        }
+      ],
+      "conditions": [
+        {
+          "predicate": "action == '/RunScript'",
+          "template": "/API/{target}{action}/{script}",
+          "parameters": [
+            {
+              "key": "script",
+              "displayName": "Script ID",
+              "type": "string",
+              "pattern": "^\\S+$"
+            }
+          ]
+        },
+        {
+          "predicate": "action == '/TriggerEvent'",
+          "template": "/API/{target}{action}/{script}",
+          "parameters": [
+            {
+              "key": "script",
+              "displayName": "Event ID",
+              "type": "string",
+              "pattern": "^\\S+$"
+            }
+          ]
+        },
+        {
+          "predicate": "action == '/FreeKiosk'",
+          "parameters": [
+            {
+              "key": "command",
+              "displayName": "Command",
+              "type": "menu",
+              "fadeable": false,
+              "values": [
+                { "Wake Screen": "wake" },
+                { "Screen On": "screen.on" },
+                { "Screen Off": "screen.off" },
+                { "Lock Device": "lock" },
+                { "Reboot": "reboot" },
+                { "Brightness": "brightness" },
+                { "Enable Screensaver": "screensaver.on" },
+                { "Disable Screensaver": "screensaver.off" },
+                { "Reload Page": "reload" },
+                { "Volume": "volume" },
+                { "Beep": "audio.beep" },
+                { "Clear Cache": "clearCache" },
+                { "Restart Kiosk UI": "restart-ui" }
+              ],
+              "defaultValue": "wake"
+            }
+          ],
+          "conditions": [
+            {
+              "predicate": "command in { 'wake', 'screen.on', 'screen.off', 'lock', 'reboot', 'screensaver.on', 'screensaver.off', 'reload', 'audio.beep', 'clearCache', 'restart-ui' }",
+              "template": "/API/{target}/FreeKiosk/{command}"
+            },
+            {
+              "predicate": "command == 'brightness'",
+              "template": "/API/{target}/FreeKiosk/{command}/{v1}",
+              "parameters": [
+                {
+                  "key": "v1",
+                  "displayName": "Level",
+                  "type": "scalar",
+                  "width": 150,
+                  "minimum": 0,
+                  "precision": 0,
+                  "fadeable": false,
+                  "defaultValue": 50,
+                  "maximum": 100
+                }
+              ]
+            },
+            {
+              "predicate": "command == 'volume'",
+              "template": "/API/{target}/FreeKiosk/{command}/{v1}",
+              "parameters": [
+                {
+                  "key": "v1",
+                  "displayName": "Level",
+                  "type": "scalar",
+                  "width": 150,
+                  "minimum": 0,
+                  "precision": 0,
+                  "fadeable": false,
+                  "defaultValue": 50,
+                  "maximum": 100
+                }
+              ]
+            }
+          ]
         }
       ]
     },
     {
-      "predicate": "message == 'groupRunScript'",
-      "template": "{prefix}/Group/{slug}/RunScript/{scriptId}",
+      "predicate": "target == 'Group/'",
+      "template": "/API/{target}{id}{action}",
       "parameters": [
         {
-          "key": "slug",
-          "displayName": "Group Slug",
+          "key": "id",
+          "displayName": "Group slug",
           "type": "string",
           "pattern": "^\\S+$"
         },
         {
-          "key": "scriptId",
-          "displayName": "Script ID",
-          "type": "string",
-          "pattern": "^\\S+$"
+          "key": "action",
+          "displayName": "Action",
+          "type": "menu",
+          "fadeable": false,
+          "values": [
+            { "Wake on LAN": "/WakeOnLAN" },
+            { "Run script": "/RunScript" },
+            { "Trigger event": "/TriggerEvent" },
+            { "FreeKiosk command": "/FreeKiosk" }
+          ],
+          "defaultValue": "/WakeOnLAN"
+        }
+      ],
+      "conditions": [
+        {
+          "predicate": "action == '/RunScript'",
+          "template": "/API/{target}{id}{action}/{script}",
+          "parameters": [
+            {
+              "key": "script",
+              "displayName": "Script ID",
+              "type": "string",
+              "pattern": "^\\S+$"
+            }
+          ]
+        },
+        {
+          "predicate": "action == '/TriggerEvent'",
+          "template": "/API/{target}{id}{action}/{script}",
+          "parameters": [
+            {
+              "key": "script",
+              "displayName": "Event ID",
+              "type": "string",
+              "pattern": "^\\S+$"
+            }
+          ]
+        },
+        {
+          "predicate": "action == '/FreeKiosk'",
+          "parameters": [
+            {
+              "key": "command",
+              "displayName": "Command",
+              "type": "menu",
+              "fadeable": false,
+              "values": [
+                { "Wake Screen": "wake" },
+                { "Screen On": "screen.on" },
+                { "Screen Off": "screen.off" },
+                { "Lock Device": "lock" },
+                { "Reboot": "reboot" },
+                { "Brightness": "brightness" },
+                { "Enable Screensaver": "screensaver.on" },
+                { "Disable Screensaver": "screensaver.off" },
+                { "Reload Page": "reload" },
+                { "Volume": "volume" },
+                { "Beep": "audio.beep" },
+                { "Clear Cache": "clearCache" },
+                { "Restart Kiosk UI": "restart-ui" }
+              ],
+              "defaultValue": "wake"
+            }
+          ],
+          "conditions": [
+            {
+              "predicate": "command in { 'wake', 'screen.on', 'screen.off', 'lock', 'reboot', 'screensaver.on', 'screensaver.off', 'reload', 'audio.beep', 'clearCache', 'restart-ui' }",
+              "template": "/API/{target}{id}/FreeKiosk/{command}"
+            },
+            {
+              "predicate": "command == 'brightness'",
+              "template": "/API/{target}{id}/FreeKiosk/{command}/{v1}",
+              "parameters": [
+                {
+                  "key": "v1",
+                  "displayName": "Level",
+                  "type": "scalar",
+                  "width": 150,
+                  "minimum": 0,
+                  "precision": 0,
+                  "fadeable": false,
+                  "defaultValue": 50,
+                  "maximum": 100
+                }
+              ]
+            },
+            {
+              "predicate": "command == 'volume'",
+              "template": "/API/{target}{id}/FreeKiosk/{command}/{v1}",
+              "parameters": [
+                {
+                  "key": "v1",
+                  "displayName": "Level",
+                  "type": "scalar",
+                  "width": 150,
+                  "minimum": 0,
+                  "precision": 0,
+                  "fadeable": false,
+                  "defaultValue": 50,
+                  "maximum": 100
+                }
+              ]
+            }
+          ]
         }
       ]
     },
     {
-      "predicate": "message == 'groupTriggerEvent'",
-      "template": "{prefix}/Group/{slug}/TriggerEvent/{eventId}",
+      "predicate": "target == 'Monitor/'",
       "parameters": [
         {
-          "key": "slug",
-          "displayName": "Group Slug",
+          "key": "id",
+          "displayName": "Monitor slug",
           "type": "string",
           "pattern": "^\\S+$"
         },
         {
-          "key": "eventId",
-          "displayName": "Event ID",
-          "type": "string",
-          "pattern": "^\\S+$"
-        }
-      ]
-    },
-    {
-      "predicate": "message == 'tagWol'",
-      "template": "{prefix}/Tag/{slug}/WakeOnLAN",
-      "parameters": [
-        {
-          "key": "slug",
-          "displayName": "Tag Slug",
-          "type": "string",
-          "pattern": "^\\S+$"
-        }
-      ]
-    },
-    {
-      "predicate": "message == 'tagRunScript'",
-      "template": "{prefix}/Tag/{slug}/RunScript/{scriptId}",
-      "parameters": [
-        {
-          "key": "slug",
-          "displayName": "Tag Slug",
+          "key": "method",
+          "displayName": "Check type",
           "type": "string",
           "pattern": "^\\S+$"
         },
         {
-          "key": "scriptId",
-          "displayName": "Script ID",
-          "type": "string",
-          "pattern": "^\\S+$"
-        }
-      ]
-    },
-    {
-      "predicate": "message == 'tagTriggerEvent'",
-      "template": "{prefix}/Tag/{slug}/TriggerEvent/{eventId}",
-      "parameters": [
-        {
-          "key": "slug",
-          "displayName": "Tag Slug",
+          "key": "checkAction",
+          "displayName": "Action",
           "type": "string",
           "pattern": "^\\S+$"
         },
         {
-          "key": "eventId",
-          "displayName": "Event ID",
+          "key": "valueMode",
+          "displayName": "Values",
+          "type": "menu",
+          "fadeable": false,
+          "values": [
+            { "None": "none" },
+            { "Send values": "values" }
+          ],
+          "defaultValue": "none"
+        }
+      ],
+      "conditions": [
+        {
+          "predicate": "valueMode == 'none'",
+          "template": "/API/Monitor/{id}/{method}/{checkAction}"
+        },
+        {
+          "predicate": "valueMode == 'values'",
+          "template": "/API/Monitor/{id}/{method}/{checkAction} {values}",
+          "parameters": [
+            {
+              "key": "values",
+              "displayName": "Values",
+              "type": "string",
+              "pattern": ".+"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "predicate": "target == 'FreeKiosk/'",
+      "parameters": [
+        {
+          "key": "id",
+          "displayName": "Terminal slug",
+          "type": "string",
+          "pattern": "^\\S+$"
+        },
+        {
+          "key": "command",
+          "displayName": "Command",
+          "type": "menu",
+          "fadeable": false,
+          "values": [
+            { "Wake Screen": "wake" },
+            { "Screen On": "screen.on" },
+            { "Screen Off": "screen.off" },
+            { "Lock Device": "lock" },
+            { "Reboot": "reboot" },
+            { "Brightness": "brightness" },
+            { "Enable Screensaver": "screensaver.on" },
+            { "Disable Screensaver": "screensaver.off" },
+            { "Reload Page": "reload" },
+            { "Volume": "volume" },
+            { "Beep": "audio.beep" },
+            { "Clear Cache": "clearCache" },
+            { "Restart Kiosk UI": "restart-ui" }
+          ],
+          "defaultValue": "wake"
+        }
+      ],
+      "conditions": [
+        {
+          "predicate": "command in { 'wake', 'screen.on', 'screen.off', 'lock', 'reboot', 'screensaver.on', 'screensaver.off', 'reload', 'audio.beep', 'clearCache', 'restart-ui' }",
+          "template": "/API/FreeKiosk/{id}/{command}"
+        },
+        {
+          "predicate": "command == 'brightness'",
+          "template": "/API/FreeKiosk/{id}/{command}/{v1}",
+          "parameters": [
+            {
+              "key": "v1",
+              "displayName": "Level",
+              "type": "scalar",
+              "width": 150,
+              "minimum": 0,
+              "precision": 0,
+              "fadeable": false,
+              "defaultValue": 50,
+              "maximum": 100
+            }
+          ]
+        },
+        {
+          "predicate": "command == 'volume'",
+          "template": "/API/FreeKiosk/{id}/{command}/{v1}",
+          "parameters": [
+            {
+              "key": "v1",
+              "displayName": "Level",
+              "type": "scalar",
+              "width": 150,
+              "minimum": 0,
+              "precision": 0,
+              "fadeable": false,
+              "defaultValue": 50,
+              "maximum": 100
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "predicate": "target == 'Dummy'",
+      "template": "/API/Dummy/{id}/Heartbeat",
+      "parameters": [
+        {
+          "key": "id",
+          "displayName": "Dummy slug",
           "type": "string",
           "pattern": "^\\S+$"
         }
       ]
     },
     {
-      "predicate": "message == 'allRunScript'",
-      "template": "{prefix}/All/RunScript/{scriptId}",
+      "predicate": "target == 'System'",
+      "template": "/API{action}",
       "parameters": [
         {
-          "key": "scriptId",
-          "displayName": "Script ID",
-          "type": "string",
-          "pattern": "^\\S+$"
-        }
-      ]
-    },
-    {
-      "predicate": "message == 'allTriggerEvent'",
-      "template": "{prefix}/All/TriggerEvent/{eventId}",
-      "parameters": [
-        {
-          "key": "eventId",
-          "displayName": "Event ID",
-          "type": "string",
-          "pattern": "^\\S+$"
-        }
-      ]
-    },
-    {
-      "predicate": "message == 'dummyHeartbeat'",
-      "template": "{prefix}/Dummy/{slug}/Heartbeat",
-      "parameters": [
-        {
-          "key": "slug",
-          "displayName": "Dummy Slug",
-          "type": "string",
-          "pattern": "^\\S+$"
+          "key": "action",
+          "displayName": "Action",
+          "type": "menu",
+          "fadeable": false,
+          "values": [
+            { "Shutdown gracefully": "/Shutdown" },
+            { "Shutdown forcefully": "/Shutdown/Force" }
+          ],
+          "defaultValue": "/Shutdown"
         }
       ]
     }
